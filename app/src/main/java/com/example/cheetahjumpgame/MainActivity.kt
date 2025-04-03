@@ -247,73 +247,57 @@ class MainActivity : AppCompatActivity() {
         backgroundMusic.pause()
         loseSound.start()
 
-        // Создаем диалоговое окно
-        val dialog = AlertDialog.Builder(this).create()
-
-        val container = LinearLayout(this).apply {
+        // Создаем контейнер для диалогового окна
+        val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
             setPadding(50, 50, 50, 50)
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                setColor(Color.parseColor("#80000000"))
-                cornerRadius = 16f
-            }
+            setBackgroundColor(Color.argb(220, 40, 40, 40))
         }
 
-        val scoreTextView = TextView(this).apply {
-            text = "Набранные очки: $score"
-            setTextColor(Color.WHITE)
-            textSize = 24f
+        // Заголовок "ИГРА ОКОНЧЕНА"
+        val title = TextView(this).apply {
+            text = "ИГРА ОКОНЧЕНА"
+            setTextColor(Color.RED)
+            textSize = 28f
             gravity = Gravity.CENTER
             setPadding(0, 0, 0, 30)
         }
+        layout.addView(title)
 
-        val restartButton = Button(this).apply {
-            text = "Заново"
-            setOnClickListener {
-                dialog.dismiss()
+        // Текст с очками
+        val scoreText = TextView(this).apply {
+            text = "Счёт: $score"
+            setTextColor(Color.WHITE)
+            textSize = 24f
+            gravity = Gravity.CENTER
+        }
+        layout.addView(scoreText)
+
+        // Создаем диалоговое окно
+        AlertDialog.Builder(this)
+            .setView(layout)
+            .setPositiveButton("Заново") { _, _ ->
                 startGame()
             }
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                setColor(ContextCompat.getColor(this@MainActivity, R.color.purple_500))
-                cornerRadius = 8f
-            }
-            setTextColor(Color.WHITE)
-            layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = 20
-            }
-        }
-
-        val menuButton = Button(this).apply {
-            text = "В меню"
-            setOnClickListener {
-                dialog.dismiss()
+            .setNegativeButton("В меню") { _, _ ->
                 finish()
             }
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                setColor(ContextCompat.getColor(this@MainActivity, R.color.purple_500))
-                cornerRadius = 8f
+            .setCancelable(false)
+            .create()
+            .also { dialog ->
+                dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+                dialog.show()
+
+                // Настройка кнопок
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+                    setTextColor(Color.WHITE)
+                    setBackgroundColor(Color.argb(100, 0, 150, 0))
+                }
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
+                    setTextColor(Color.WHITE)
+                    setBackgroundColor(Color.argb(100, 150, 0, 0))
+                }
             }
-            setTextColor(Color.WHITE)
-            layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-        }
-
-        container.addView(scoreTextView)
-        container.addView(restartButton)
-        container.addView(menuButton)
-
-        dialog.setView(container)
-        dialog.setCancelable(false)
-        dialog.show()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
